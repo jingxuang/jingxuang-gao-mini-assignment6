@@ -1,25 +1,53 @@
-import logo from './logo.svg';
 import './App.css';
+import {Component} from 'react';
+import {connect} from 'react-redux';
+import {rollDice, clearDice} from './redux/ActionCreators';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const mapStateToProps = state => {
+    return {
+        sum: state.sum,
+        diceList: state.diceList
+    }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+    rollDice: (num) => {dispatch(rollDice(num))},
+    clearDice: () => {dispatch(clearDice())}
+});
+class App extends Component {
+
+    getRandomNum() {
+        return (Math.floor(Math.random() * 6) + 1);
+    }
+
+    render() {
+        
+        const diceRows = this.props.diceList.map((diceRow) => {
+            return(
+                <div className="diceRow">
+                    { diceRow }
+                </div>
+            );
+        });
+
+        return (
+            <div className="container">
+                <div className="row">
+                    <button onClick={() => this.props.rollDice(this.getRandomNum())}>Roll Dice</button>
+                    <button onClick={() => this.props.clearDice()}>Clear Dice</button>
+                </div>
+
+                <div className="row">
+                    <h1>Sum: {this.props.sum} </h1>
+                </div>
+                
+                { diceRows }
+            </div>
+        );
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(App);
